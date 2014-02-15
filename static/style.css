@@ -1,0 +1,14 @@
+.navbar{margin:0;}
+.navbar-brand{color:#13806F;}
+.navbar-brand:hover{color:#1BB39C;}
+.navbar-toggle{background-color:#F2494C;border:1px solid #BC113D;}
+.navbar-toggle:hover, .navbar-toggle:active, .navbar-toggle:focus{background-color:#B8373A;}
+.navbar-toggle .icon-bar{background-color:#FFF;}
+.jumbotron{color:#84FFED;background-color:#1BB39C;border-top:1px solid #13806F;border-bottom:1px solid #13806F;}
+.jumbotron h1{color:#FFF;}
+.btn-primary{background-color:#1BB39C;border-color:#84FFED;}
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus{background-color:#13806F;border-color:#13806F;}
+.btn-success{background-color:#F2494C;border-color:#BC113D;}
+.btn-success:hover, .btn-success:active, .btn-success:focus{background-color:#B8373A;border-color:#BC113D;}
+.has-error .form-control{border-color:#F2494C}
+.page-header{color:#F2494C;border-bottom-color:#F2494C;}
