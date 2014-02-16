@@ -18,4 +18,3 @@ class User(BaseModel):
     email = CharField()
     password = CharField()
     created_at = DateTimeField(default=datetime.now)
-    

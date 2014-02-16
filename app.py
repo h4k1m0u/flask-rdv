@@ -1,5 +1,5 @@
-#!/usr/bin/python
-from flask import Flask, render_template, url_for, redirect, flash, g
+#register!/usr/bin/python
+from flask import Flask, render_template, url_for, redirect, flash, g, session, request
 from forms import RegistrationForm, LoginForm
 from models import database, User
 from hashlib import md5
@@ -13,6 +13,7 @@ SECRET_KEY = os.urandom(24)
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+# connection to db
 @app.before_request
 def before_request():
     g.db = database
@@ -24,41 +25,53 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+# session-based authentication
+def authenticate(user):
+    session['is_logged_in'] = True
+    session['username'] = user.username
+
 # routes
 @app.route('/', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        # create a new user in the db
-        User.create(
-            username = form.username.data,
-            email = form.email.data,
-            password = md5(form.password.data).hexdigest()
-        )
+def index():
+    # login & register forms
+    login_form = LoginForm(prefix='login') 
+    register_form  = RegistrationForm(prefix='register') 
+    is_logged_in = session.get('is_logged_in')
 
-        flash('Thanks for registering')
-        return redirect(url_for('login'))
-
-    return render_template('register.html', form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
+    # on login form submission
+    if login_form.validate_on_submit():
+        # check if user exist in db
         try:
-            User.get(
-                username = form.username.data,
-                password = md5(form.password.data).hexdigest()
+            user = User.get(
+                username = login_form.username.data,
+                password = md5(login_form.password.data).hexdigest()
             )
         except User.DoesNotExist:
             flash('User doesnt exist')
         else:
             print 'logged in'
             flash('Logging in')
+            authenticate(user)
 
-        return redirect(url_for('login'))
+    # on register form submission
+    if register_form.validate_on_submit():
+        print 'register form validation', register_form.form_name.data
+        # create a new user in the db
+        User.create(
+            username = register_form.username.data,
+            email = register_form.email.data,
+            password = md5(register_form.password.data).hexdigest()
+        )
 
-    return render_template('login.html', form=form)
+        flash('Thanks for registering')
+
+    return render_template('register.html', **{
+        'login_form': login_form,
+        'is_login_form': login_form.form_name.data == 'login_form',
+        'register_form': register_form,
+        'is_register_form': register_form.form_name.data == 'register_form',
+        'is_logged_in': is_logged_in
+    })
 
 # run app
 if __name__ == '__main__':

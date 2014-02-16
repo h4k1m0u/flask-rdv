@@ -1,23 +1,26 @@
 {% extends 'layout.html' %}
 {% block body %}
     <h1 class="page-header">Register</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
+    <form action="/" method="post" role="form">
+        {{ register_form.hidden_tag() }}
 
-        <div class="form-group{% if form.errors.email %} has-error{% endif %}">
-            <label for="email">Email</label>
-            {{ form.email(class='form-control', placeholder='Email') }}
+        <div class="form-group{% if register_form.errors.email and is_register_form %} has-error{% endif %}">
+            <label for="register-email">Email</label>
+            {{ register_form.email(class='form-control', placeholder='Email') }}
         </div>
-        <div class="form-group{% if form.errors.username %} has-error{% endif %}">
-            <label for="username">Username</label>
-            {{ form.username(class='form-control', placeholder='Username') }}
+        <div class="form-group{% if register_form.errors.username and is_register_form %} has-error{% endif %}">
+            <label for="register-username">Username</label>
+            {{ register_form.username(class='form-control', placeholder='Username') }}
         </div>
-        <div class="form-group{% if form.errors.password %} has-error{% endif %}">
-            <label for="password">Password</label>
-            {{ form.password(class='form-control', placeholder='Password') }}
+        <div class="form-group{% if register_form.errors.password and is_register_form %} has-error{% endif %}">
+            <label for="register-password">Password</label>
+            {{ register_form.password(class='form-control', placeholder='Password') }}
+        </div>
+        <div class="form-group{% if register_form.errors.confirm and is_register_form %} has-error{% endif %}">
+            <label for="register-confirm">Confirm password</label>
+            {{ register_form.confirm(class='form-control', placeholder='Confirm password') }}
         </div>
 
         <button class="btn btn-success" type="submit" >Register</button>
-
     </form>
 {% endblock %}

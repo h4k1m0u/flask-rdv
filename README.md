@@ -6,4 +6,4 @@
 
 ##Prequisite:
 Flask, Peewee, Wtforms libraries
-Sqlite3 library.
+MySQL.

@@ -10,28 +10,33 @@
     <header class="navbar navbar-static-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" type="button">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+                {% if not is_logged_in %}
+                    <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" type="button">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                {% endif %}
                 <a href="#" class="navbar-brand">Flask Appointments</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right" action="/login" method="post" role="form">
-                    {{ form.hidden_tag() }}
-                    <div class="form-group{% if form.errors.username %} has-error{% endif %}">
-                        <label class="sr-only" for="username">Username</label>
-                        {{ form.username(class='form-control', placeholder='Username') }}
-                    </div>
-                    <div class="form-group{% if form.errors.password %} has-error{% endif %}">
-                        <label class="sr-only" for="password">Password</label>
-                        {{ form.password(class='form-control', placeholder='Password') }}
-                    </div>
-                    <button class="btn btn-success" type="submit" >Sign in</button>
-                </form>
-            </div>
+            {% if not is_logged_in %}
+                <div class="navbar-collapse collapse">
+                    <form class="navbar-form navbar-right" action="/" method="post" role="form">
+                        {{ login_form.hidden_tag() }}
+
+                        <div class="form-group{% if login_form.errors.username and is_login_form %} has-error{% endif %}">
+                            <label class="sr-only" for="login-username">Username</label>
+                            {{ login_form.username(class='form-control', placeholder='Username') }}
+                        </div>
+                        <div class="form-group{% if login_form.errors.password and is_login_form %} has-error{% endif %}">
+                            <label class="sr-only" for="login-password">Password</label>
+                            {{ login_form.password(class='form-control', placeholder='Password') }}
+                        </div>
+                        <button class="btn btn-success" type="submit" >Sign in</button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
     </header>
 
