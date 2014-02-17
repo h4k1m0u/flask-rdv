@@ -4,39 +4,47 @@
     <meta charset="UTF-8" />
     <title>Flask Appointments</title>
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/1.6.4/fullcalendar.css" rel="stylesheet" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/1.6.4/fullcalendar.print.css" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='style.css') }}?d={{ getmtime('static/style.css') }}" rel="stylesheet" />
 </head>
 <body>
     <header class="navbar navbar-static-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-                {% if not is_logged_in %}
-                    <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" type="button">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                {% endif %}
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" type="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
                 <a href="#" class="navbar-brand">Flask Appointments</a>
             </div>
-            {% if not is_logged_in %}
-                <div class="navbar-collapse collapse">
+            <div class="navbar-collapse collapse">
+                {% if not is_logged_in %}
                     <form class="navbar-form navbar-right" action="/" method="post" role="form">
                         {{ login_form.hidden_tag() }}
 
-                        <div class="form-group{% if login_form.errors.username and is_login_form %} has-error{% endif %}">
+                        <div class="form-group{% if login_form.errors.username %} has-error{% endif %}">
                             <label class="sr-only" for="login-username">Username</label>
                             {{ login_form.username(class='form-control', placeholder='Username') }}
                         </div>
-                        <div class="form-group{% if login_form.errors.password and is_login_form %} has-error{% endif %}">
+                        <div class="form-group{% if login_form.errors.password %} has-error{% endif %}">
                             <label class="sr-only" for="login-password">Password</label>
                             {{ login_form.password(class='form-control', placeholder='Password') }}
                         </div>
                         <button class="btn btn-success" type="submit" >Sign in</button>
                     </form>
-                </div>
-            {% endif %}
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="{{ url_for('logout') }}" title="Log out">
+                                Logout <b>({{ username }})</b>
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
         </div>
     </header>
 
@@ -44,13 +52,15 @@
         <div class="container">
             <h1>Flask Appointments</h1>
             <p>This is an app that helps you manage your appointments</p>
-            <p>
-                <a href="/register" class="btn btn-primary btn-lg">Register »</a>
-            </p>
+            {% if not is_logged_in %}
+                <p>
+                    <a href="#content" class="btn btn-primary btn-lg btn-register">Register »</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="content">
         <div class="row">
             <div class="col-md-8">
                 {% block body %}
@@ -63,7 +73,86 @@
         </footer>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <script src="{{ url_for('static', filename='bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='jquery.noty.packaged.min.js') }}" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/1.6.4/fullcalendar.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function() {
+            // show flash notification
+            var flash = '{{ get_flashed_messages()[0] }}';    
+            if (flash)
+                noty({
+                    text:    flash,
+                    layout:  'top',
+                    type:    'error',
+                    timeout: 1000
+                });
+
+            // init calendar
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+            
+            if (window.location.pathname == '/rdv') {
+                var calendar = $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,agendaWeek,agendaDay'
+                    },
+                    defaultView: 'agendaDay',
+                    selectable: true, // allow click & drag
+                    selectHelper: true, // helper to highlight event
+
+                    // on event selection
+                    select: function(start, end, allDay) {
+                        // give a name to the event
+                        var title = prompt('Event Title:');
+
+                        if (title) {
+                            // render a new event on the calendar
+                            calendar.fullCalendar('renderEvent',
+                                {
+                                    title:  title,
+                                    start:  start,
+                                    end:    end,
+                                    allDay: allDay
+                                },
+                                true
+                            );
+
+                            // save the event to db
+                            $.getJSON(
+                                '/save_rdv',
+                                {
+                                    title:  title,
+                                    start:  start.toUTCString(),
+                                    end:    end.toUTCString()
+                                },
+                                function(data) {
+                                    noty({
+                                        text:    data.flash,
+                                        layout:  'top',
+                                        type:    'error',
+                                        timeout: 1000
+                                    });
+                                }
+                            );
+                        }
+
+                        // clear current selection
+                        calendar.fullCalendar('unselect');
+                    },
+
+                    editable: true,
+                    events: []
+                });
+            }
+
+        });
+    </script>
 </body>
 </html>

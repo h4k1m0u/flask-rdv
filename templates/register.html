@@ -4,15 +4,15 @@
     <form action="/" method="post" role="form">
         {{ register_form.hidden_tag() }}
 
-        <div class="form-group{% if register_form.errors.email and is_register_form %} has-error{% endif %}">
+        <div class="form-group{% if register_form.errors.email %} has-error{% endif %}">
             <label for="register-email">Email</label>
             {{ register_form.email(class='form-control', placeholder='Email') }}
         </div>
-        <div class="form-group{% if register_form.errors.username and is_register_form %} has-error{% endif %}">
+        <div class="form-group{% if register_form.errors.username %} has-error{% endif %}">
             <label for="register-username">Username</label>
             {{ register_form.username(class='form-control', placeholder='Username') }}
         </div>
-        <div class="form-group{% if register_form.errors.password and is_register_form %} has-error{% endif %}">
+        <div class="form-group{% if register_form.errors.password %} has-error{% endif %}">
             <label for="register-password">Password</label>
             {{ register_form.password(class='form-control', placeholder='Password') }}
         </div>

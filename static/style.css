@@ -1,6 +1,6 @@
 .navbar{margin:0;}
-.navbar-brand{color:#13806F;}
-.navbar-brand:hover{color:#1BB39C;}
+.navbar-brand, .navbar-nav a{color:#13806F;}
+.navbar-brand:hover, .navbar-nav a:hover{color:#1BB39C;}
 .navbar-toggle{background-color:#F2494C;border:1px solid #BC113D;}
 .navbar-toggle:hover, .navbar-toggle:active, .navbar-toggle:focus{background-color:#B8373A;}
 .navbar-toggle .icon-bar{background-color:#FFF;}
@@ -12,3 +12,4 @@
 .btn-success:hover, .btn-success:active, .btn-success:focus{background-color:#B8373A;border-color:#BC113D;}
 .has-error .form-control{border-color:#F2494C}
 .page-header{color:#F2494C;border-bottom-color:#F2494C;}
+#noty_top_layout_container li{background-color:#F2494C !important;}

@@ -8,6 +8,7 @@ database = MySQLDatabase('flask', host='localhost', user='root', passwd='toor')
 def create_tables():
     database.connect()
     User.create_table()
+    Rdv.create_table()
 
 class BaseModel(Model):
     class Meta:
@@ -18,3 +19,8 @@ class User(BaseModel):
     email = CharField()
     password = CharField()
     created_at = DateTimeField(default=datetime.now)
+
+class Rdv(BaseModel):
+    title = CharField()
+    start = DateTimeField(default=datetime.now)
+    end = DateTimeField()
